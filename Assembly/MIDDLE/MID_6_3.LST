@@ -1,0 +1,133 @@
+Microsoft (R) Macro Assembler Version 5.00                  5/8/20 21:15:28
+                                                             Page     1-1
+
+
+				.MODEL	SMALL 
+ 0100				.STACK	100H 
+ 0000				.DATA 
+ 0000  4E 4F 20 4C 4F 57 45		ERR_MSG		DB	'NO LOWER CASE 
+				LETTERS$' 
+       52 20 43 41 53 45 20	
+       4C 45 54 54 45 52 53	
+       24			
+ 0016  20 24				SPACE_MSG	DB	' $' 
+ 0000				.CODE 
+ 0000				MAIN	PROC 
+ 0000  B8 ---- R			MOV	AX,@DATA 
+ 0003  8E D8				MOV	DS,AX 
+				 
+ 0005  B4 02				MOV	AH,2 
+ 0007  B2 3F				MOV	DL,'?' 
+ 0009  CD 21				INT	21H 
+				 
+ 000B  B5 00				MOV	CH,0 
+ 000D  B7 61				MOV	BH,'a' 
+ 000F  B3 7A				MOV	BL,'z' 
+ 0011  B4 01				MOV	AH,1 
+ 0013				@WHILE: 
+ 0013  CD 21				INT	21H 
+ 0015  3C 0D				CMP	AL,0DH 
+ 0017  74 2A				JE	@END_WHILE 
+ 0019  3C 61				CMP	AL,'a' 
+ 001B  72 24				JB	@NEXT 
+ 001D  3C 7A				CMP	AL,'z' 
+ 001F  77 20				JA	@NEXT 
+					 
+ 0021  80 FD 00				CMP	CH,0 
+ 0024  74 15				JE	@FIRST_IN 
+				 
+ 0026  3A C7				CMP	AL,BH 
+ 0028  73 07				JAE	@MAX_SET 
+ 002A  3A C3				CMP	AL,BL 
+ 002C  76 08				JBE	@MIN_SET 
+ 002E  EB 11 90				JMP	@NEXT 
+ 0031				@MAX_SET: 
+ 0031  8A F8				MOV	BH,AL 
+ 0033  EB 0C 90				JMP	@NEXT 
+ 0036				@MIN_SET: 
+ 0036  8A D8				MOV	BL,AL 
+ 0038  EB 07 90				JMP	@NEXT 
+ 003B				@FIRST_IN: 
+ 003B  8A F8				MOV	BH,AL 
+ 003D  8A D8				MOV	BL,AL 
+ 003F  B5 01				MOV	CH,1 
+ 0041				@NEXT: 
+ 0041  EB D0				JMP	@WHILE 
+				 
+ 0043				@END_WHILE: 
+ 0043  B4 02				MOV	AH,2 
+Microsoft (R) Macro Assembler Version 5.00                  5/8/20 21:15:28
+                                                             Page     1-2
+
+
+ 0045  B2 0D				MOV	DL,0DH 
+ 0047  CD 21				INT	21H 
+ 0049  B2 0A				MOV	DL,0AH 
+ 004B  CD 21				INT	21H 
+				 
+ 004D  80 FD 01				CMP	CH,1 
+ 0050  74 0B				JE	@PRT 
+				 
+ 0052  B4 09				MOV	AH,9 
+ 0054  8D 16 0000 R			LEA	DX,ERR_MSG 
+ 0058  CD 21				INT	21H 
+ 005A  EB 13 90				JMP	@END 
+ 005D				@PRT: 
+ 005D  8A D3				MOV	DL,BL 
+ 005F  CD 21				INT	21H 
+ 0061  B4 09				MOV	AH,9 
+ 0063  8D 16 0016 R			LEA	DX,SPACE_MSG 
+ 0067  CD 21				INT	21H 
+ 0069  B4 02				MOV	AH,2 
+ 006B  8A D7				MOV	DL,BH 
+ 006D  CD 21				INT	21H 
+ 006F				@END: 
+ 006F  B4 4C				MOV	AH,4CH 
+ 0071  CD 21				INT	21H 
+ 0073				MAIN	ENDP 
+ 0073					END	MAIN 
+Microsoft (R) Macro Assembler Version 5.00                  5/8/20 21:15:28
+                                                             Symbols-1
+
+
+Segments and Groups:
+
+                N a m e         	Length	 Align	Combine Class
+
+DGROUP . . . . . . . . . . . . .  	GROUP
+  _DATA  . . . . . . . . . . . .  	0018	WORD	PUBLIC	'DATA'
+  STACK  . . . . . . . . . . . .  	0100	PARA	STACK	'STACK'
+_TEXT  . . . . . . . . . . . . .  	0073	WORD	PUBLIC	'CODE'
+
+Symbols:            
+
+                N a m e         	Type	 Value	 Attr
+
+ERR_MSG  . . . . . . . . . . . .  	L BYTE	0000	_DATA
+
+MAIN . . . . . . . . . . . . . .  	N PROC	0000	_TEXT	Length = 0073
+
+SPACE_MSG  . . . . . . . . . . .  	L BYTE	0016	_DATA
+
+@CODE  . . . . . . . . . . . . .  	TEXT  _TEXT		
+@CODESIZE  . . . . . . . . . . .  	TEXT  0		
+@DATASIZE  . . . . . . . . . . .  	TEXT  0		
+@END . . . . . . . . . . . . . .  	L NEAR	006F	_TEXT
+@END_WHILE . . . . . . . . . . .  	L NEAR	0043	_TEXT
+@FILENAME  . . . . . . . . . . .  	TEXT  mid_6_3		
+@FIRST_IN  . . . . . . . . . . .  	L NEAR	003B	_TEXT
+@MAX_SET . . . . . . . . . . . .  	L NEAR	0031	_TEXT
+@MIN_SET . . . . . . . . . . . .  	L NEAR	0036	_TEXT
+@NEXT  . . . . . . . . . . . . .  	L NEAR	0041	_TEXT
+@PRT . . . . . . . . . . . . . .  	L NEAR	005D	_TEXT
+@WHILE . . . . . . . . . . . . .  	L NEAR	0013	_TEXT
+
+
+     76 Source  Lines
+     76 Total   Lines
+     25 Symbols
+
+  51154 + 465390 Bytes symbol space free
+
+      0 Warning Errors
+      0 Severe  Errors

@@ -1,0 +1,85 @@
+Microsoft (R) Macro Assembler Version 5.00                  4/16/20 22:05:29
+                                                             Page     1-1
+
+
+				.MODEL	SMALL 
+ 0100				.STACK	100H 
+ 0000				.CODE 
+ 0000				MAIN	PROC 
+ 0000  B4 02				MOV	AH,2 
+ 0002  B2 3F				MOV	DL,'?' 
+ 0004  CD 21				INT	21H 
+				 
+ 0006  B4 01				MOV	AH,1 
+ 0008  CD 21				INT	21H 
+ 000A  8A D8				MOV	BL,AL 
+ 000C  CD 21				INT	21H 
+ 000E  8A F8				MOV	BH,AL 
+ 0010  CD 21				INT	21H 
+ 0012  8A C8				MOV	CL,AL 
+				 
+ 0014  3A DF				CMP	BL,BH 
+ 0016  76 02				JBE	@NEXT1 
+ 0018  86 DF				XCHG	BL,BH 
+ 001A				@NEXT1: 
+ 001A  3A D9				CMP	BL,CL 
+ 001C  76 02				JBE	@NEXT2 
+ 001E  86 D9				XCHG	BL,CL 
+ 0020				@NEXT2: 
+ 0020  3A F9				CMP	BH,CL 
+ 0022  76 02				JBE	@NEXT3 
+ 0024  86 F9				XCHG	BH,CL 
+ 0026				@NEXT3: 
+ 0026  B4 02				MOV	AH,2 
+ 0028  B2 0D				MOV	DL,0DH 
+ 002A  CD 21				INT	21H 
+ 002C  B2 0A				MOV	DL,0AH 
+ 002E  CD 21				INT	21H 
+				 
+ 0030  8A D1				MOV	DL,CL 
+ 0032  CD 21				INT	21H 
+ 0034  8A D7				MOV	DL,BH 
+ 0036  CD 21				INT	21H 
+ 0038  8A D3				MOV	DL,BL 
+ 003A  CD 21				INT	21H 
+				 
+ 003C  B4 4C				MOV	AH,4CH 
+ 003E  CD 21				INT	21H 
+ 0040				MAIN	ENDP 
+ 0040					END	MAIN 
+Microsoft (R) Macro Assembler Version 5.00                  4/16/20 22:05:29
+                                                             Symbols-1
+
+
+Segments and Groups:
+
+                N a m e         	Length	 Align	Combine Class
+
+DGROUP . . . . . . . . . . . . .  	GROUP
+  _DATA  . . . . . . . . . . . .  	0000	WORD	PUBLIC	'DATA'
+  STACK  . . . . . . . . . . . .  	0100	PARA	STACK	'STACK'
+_TEXT  . . . . . . . . . . . . .  	0040	WORD	PUBLIC	'CODE'
+
+Symbols:            
+
+                N a m e         	Type	 Value	 Attr
+
+MAIN . . . . . . . . . . . . . .  	N PROC	0000	_TEXT	Length = 0040
+
+@CODE  . . . . . . . . . . . . .  	TEXT  _TEXT		
+@CODESIZE  . . . . . . . . . . .  	TEXT  0		
+@DATASIZE  . . . . . . . . . . .  	TEXT  0		
+@FILENAME  . . . . . . . . . . .  	TEXT  do_5_5		
+@NEXT1 . . . . . . . . . . . . .  	L NEAR	001A	_TEXT
+@NEXT2 . . . . . . . . . . . . .  	L NEAR	0020	_TEXT
+@NEXT3 . . . . . . . . . . . . .  	L NEAR	0026	_TEXT
+
+
+     45 Source  Lines
+     45 Total   Lines
+     18 Symbols
+
+  51156 + 465388 Bytes symbol space free
+
+      0 Warning Errors
+      0 Severe  Errors

@@ -1,0 +1,75 @@
+Microsoft (R) Macro Assembler Version 5.00                  4/16/20 21:08:30
+                                                             Page     1-1
+
+
+				.MODEL	SMALL 
+ 0100				.STACK	100H 
+ 0000				.CODE 
+ 0000				MAIN	PROC 
+				 
+ 0000  B4 02				MOV	AH,2 
+ 0002  B2 3F				MOV	DL,'?' 
+ 0004  CD 21				INT	21H 
+				 
+ 0006  B4 01				MOV	AH,1 
+ 0008  CD 21				INT	21H 
+ 000A  8A D8				MOV	BL,AL 
+				 
+ 000C  80 FB 2D				CMP	BL,'-' 
+ 000F  74 08				JE	@MORE 
+ 0011  80 FB 2B				CMP	BL,'+' 
+ 0014  74 03				JE	@MORE 
+ 0016  EB 07 90				JMP	@PRT 
+ 0019				@MORE: 
+ 0019  B4 01				MOV	AH,1 
+ 001B  CD 21				INT	21H 
+ 001D  8A D8				MOV	BL,AL 
+ 001F				@PRT: 
+ 001F  B4 02				MOV	AH,2 
+ 0021  B2 0D				MOV	DL,0DH 
+ 0023  CD 21				INT	21H 
+ 0025  B2 0A				MOV	DL,0AH 
+ 0027  CD 21				INT	21H 
+				 
+ 0029  8A D3				MOV	DL,BL 
+ 002B  CD 21				INT	21H 
+				 
+ 002D  B4 4C				MOV	AH,4CH 
+ 002F  CD 21				INT	21H 
+ 0031				MAIN	ENDP 
+ 0031					END	MAIN 
+Microsoft (R) Macro Assembler Version 5.00                  4/16/20 21:08:30
+                                                             Symbols-1
+
+
+Segments and Groups:
+
+                N a m e         	Length	 Align	Combine Class
+
+DGROUP . . . . . . . . . . . . .  	GROUP
+  _DATA  . . . . . . . . . . . .  	0000	WORD	PUBLIC	'DATA'
+  STACK  . . . . . . . . . . . .  	0100	PARA	STACK	'STACK'
+_TEXT  . . . . . . . . . . . . .  	0031	WORD	PUBLIC	'CODE'
+
+Symbols:            
+
+                N a m e         	Type	 Value	 Attr
+
+MAIN . . . . . . . . . . . . . .  	N PROC	0000	_TEXT	Length = 0031
+
+@CODE  . . . . . . . . . . . . .  	TEXT  _TEXT		
+@CODESIZE  . . . . . . . . . . .  	TEXT  0		
+@DATASIZE  . . . . . . . . . . .  	TEXT  0		
+@FILENAME  . . . . . . . . . . .  	TEXT  do_5_2		
+@MORE  . . . . . . . . . . . . .  	L NEAR	0019	_TEXT
+@PRT . . . . . . . . . . . . . .  	L NEAR	001F	_TEXT
+
+
+     36 Source  Lines
+     36 Total   Lines
+     17 Symbols
+
+  51156 + 465388 Bytes symbol space free
+
+      0 Warning Errors
+      0 Severe  Errors
