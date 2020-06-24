@@ -27,7 +27,7 @@ class MyPanel extends JPanel {
 	}
 	MyPanel() {
 		
-	}
+	} 
 }
 public class EX12_Font2Demo extends JFrame {
 	EX12_Font2Demo() {

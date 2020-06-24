@@ -22,9 +22,9 @@ public class EX7_GenericClass1Demo {
 		// TODO Auto-generated method stub
 		Cup c = new Cup();
 		c.setbeverage(new Boricha());
-		c.setbeverage(new Beer());
-		Beer b1 = (Beer) c.getBeverage();
-		Boricha b2 = (Boricha) c.getBeverage(); //Boricah <- Beer 오류발생
+		c.setbeverage(new Beer());	
+		Beer b1 = (Beer) c.getBeverage();	//beer -> beer (ok)
+		Boricha b2 = (Boricha) c.getBeverage(); //beer -> boricha 오류발생
 	}
 
 }

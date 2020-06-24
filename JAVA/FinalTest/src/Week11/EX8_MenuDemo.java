@@ -23,23 +23,24 @@ public class EX8_MenuDemo extends JFrame implements ActionListener {
 	}
 	
 	void makeMenu() {
+		JMenuBar mb = new JMenuBar();
 		JMenuItem item;
 		KeyStroke key;
-		JMenuBar mb = new JMenuBar();
 		
-		JMenu m1 = new JMenu("파일");
-		m1.setMnemonic(KeyEvent.VK_F); //alt+f
-		JMenu m2 = new JMenu("색상");
-		m2.setMnemonic(KeyEvent.VK_C); //alt+c
+		
+		JMenu m1 = new JMenu("파일"); m1.setMnemonic(KeyEvent.VK_F); //alt+f
+		JMenu m2 = new JMenu("색상"); m2.setMnemonic(KeyEvent.VK_C); //alt+c
 		
 		item = new JMenuItem("새 파일", KeyEvent.VK_N);
 		item.addActionListener(this);
 		m1.add(item);
+		
 		item = new JMenuItem("파일 열기",KeyEvent.VK_O);
 		item.addActionListener(this);
 		m1.add(item);
+		
 		m1.add(new JMenuItem("파일 저장"));
-		m1.addSeparator();
+		m1.addSeparator();			//구별칸 더하기
 		m1.add(new JMenuItem("종료"));
 		
 		item = new JMenuItem("파란색");

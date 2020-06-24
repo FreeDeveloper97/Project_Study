@@ -23,8 +23,8 @@ public class EX1_HelloEventDemo extends JFrame {
 		};
 		
 		JButton b = new JButton("클릭");
-		b.addActionListener(l);		//버튼에 리스너함수와 연동을 추가한다 : addListener 함수
 		
+		b.addActionListener(l);		//버튼에 리스너함수와 연동을 추가한다 : addListener 함수
 		add(b);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
