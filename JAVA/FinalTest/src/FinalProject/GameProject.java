@@ -1,6 +1,8 @@
 package FinalProject;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,85 +15,105 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import javax.imageio.IIOException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
 import com.sun.glass.events.KeyEvent;
 
 class MainFraim extends JFrame implements ActionListener {
 	
-	JFrame frame = new JFrame();
-	int arrayIndex[][] = new int[20][30];
-	JButton j2[][] = new JButton[20][30];
-	int row=10, colum=20;
-	int status = 2;
-	int bomCount = 0;
+	JFrame frame = new JFrame();	//ÃÖ»óÀ§ Å« Æ²
+	JPanel north = new JPanel();	//»ó´Ü¿¡ Áö·Ú¼ö, Å¸ÀÌ¸Ó ³ÖÀ» ÆĞ³Î
+	JPanel center = new JPanel();	//Áß°£¿¡ ±×¸®µå ·¹ÀÌ¾Æ¿ô ³ÖÀ» ÆĞ³Î
+	JLabel l1 = new JLabel();		//Áö·Ú¼ö
+	JLabel l2 = new JLabel();		//°ÔÀÓ»óÅÂ
+	JLabel l3 = new JLabel();		//Å¸ÀÌ¸Ó
+	
+	int arrayIndex[][] = new int[20][30];		//Áö·Ú : -1, ±×¿Ü : Áö·Ú±ÙÃ³ Ä«¿îÆ®¼ö
+	int arrayBlue[][] = new int[20][30];		//ÃÊ±â°ª : 0, ¿ìÅ¬¸¯ : 1, Å¬¸¯ : 2s
+	JButton j2[][] = new JButton[20][30];		//±×¸®µå ·¹ÀÌ¾Æ¿ô¿¡ µé¾î°¡´Â ¹öÆ°
+	
+	int row=10, colum=20;				//»çÀÌÁî Á¶ÀıÀ» À§ÇÑ Çà·Ä°ª
+	int status = 2;						//»çÀÌÁî Á¶ÀıÀ» À§ÇÑ°ª, 1 : ÃÊ±Ş, 2 : Áß±Ş, 3 : °í±Ş
+	int bomCount = 0;					//Áö·Ú¼ö
+	int timer = 0;						//Å¸ÀÌ¸Ó
+	boolean start = true;				//Å¸ÀÌ¸Ó Ã¹ ÀÛµ¿¿©ºÎ
+	boolean statusTimer = true;			//Å¸ÀÌ¸Ó Á¾·á¿©ºÎ
 	
 	MainFraim() {
+		
+		setLayout(new BorderLayout());
 		setMenu();
 		settingSize();
 		setGridLayout();
+		setArrayRandom();
+		setArray();
+		setNorth();
 		
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	};
 	
 	void setMenu() {
-		frame.setTitle("ì§€ë¢°ì°¾ê¸°");
+		frame.setTitle("Áö·ÚÃ£±â");
 		//JMenuBar > JMenu > JMenuItem
 		JMenuBar mb = new JMenuBar();
-		JMenu menu1 = new JMenu("ê²Œì„");
-		JMenu menu2 = new JMenu("íŒŒì¼");
-		JMenu menu3 = new JMenu("ë„ì›€ë§");
+		JMenu menu1 = new JMenu("°ÔÀÓ");
+		JMenu menu2 = new JMenu("ÆÄÀÏ");
+		JMenu menu3 = new JMenu("µµ¿ò¸»");
 		JMenuItem item;
-		JMenu subMenu = new JMenu("ë ˆë²¨ ì„ íƒ");
+		JMenu subMenu = new JMenu("·¹º§ ¼±ÅÃ");
 		
 		//menu1
-		item = new JMenuItem("ìƒˆ ê²Œì„");
+		item = new JMenuItem("»õ °ÔÀÓ");
 		item.addActionListener(this);
 		menu1.add(item);
 		
-		//ë ˆë²¨ ì„ íƒ
-		item = new JMenuItem("ì´ˆê¸‰");
+		//·¹º§ ¼±ÅÃ
+		item = new JMenuItem("ÃÊ±Ş");
 		item.addActionListener(this);
 		subMenu.add(item);
 		
-		item = new JMenuItem("ì¤‘ê¸‰");
+		item = new JMenuItem("Áß±Ş");
 		item.addActionListener(this);
 		subMenu.add(item);
 		
-		item = new JMenuItem("ê³ ê¸‰");
+		item = new JMenuItem("°í±Ş");
 		item.addActionListener(this);
 		subMenu.add(item);
 		
 		menu1.add(subMenu);
 		
-		menu1.addSeparator();		//êµ¬ë³„ì¹¸ ì¶”ê°€
+		menu1.addSeparator();		//±¸º°Ä­ Ãß°¡
 		
-		item = new JMenuItem("ì¢…ë£Œí•˜ê¸°");
+		item = new JMenuItem("Á¾·áÇÏ±â");
 		item.addActionListener(this);
 		menu1.add(item);
 		
 		//menu2
-		item = new JMenuItem("ì €ì¥");
+		item = new JMenuItem("ÀúÀå");
 		item.addActionListener(this);
 		menu2.add(item);
 		
-		item = new JMenuItem("ë¶ˆëŸ¬ì˜¤ê¸°");
+		item = new JMenuItem("ºÒ·¯¿À±â");
 		item.addActionListener(this);
 		menu2.add(item);
 		
 		//menu3
-		item = new JMenuItem("ë„ì›€ë§");
+		item = new JMenuItem("µµ¿ò¸»");
 		item.addActionListener(this);
 		menu3.add(item);
 		
-		//ë©”ë‰´ë°”ì— ë©”ë‰´ ì¶”ê°€
+		//¸Ş´º¹Ù¿¡ ¸Ş´º Ãß°¡
 		mb.add(menu1);
 		mb.add(menu2);
 		mb.add(menu3);
@@ -99,6 +121,20 @@ class MainFraim extends JFrame implements ActionListener {
 		frame.setJMenuBar(mb);
 	}
 	
+	//»ó´Ü¿¡ Áö·Ú¼ö, °ÔÀÓ»óÅÂ, Å¸ÀÌ¸Ó¸¦ Ç¥±âÇÏ´Â ¸Ş¼Òµå
+	void setNorth()
+	{
+		north.setLayout(new FlowLayout(FlowLayout.CENTER,60,10));
+		l1.setText("Áö·Ú¼ö : " + bomCount);
+		l2.setText("^^");
+		l3.setText("´©Àû½Ã°£ : " + timer);
+		north.add(l1);
+		north.add(l2);
+		north.add(l3);
+		frame.add(north, BorderLayout.NORTH);
+	}
+	
+	//»çÀÌÁî Á¶ÀıÀ» À§ÇÑ ¸Ş¼Òµå
 	void settingSize()
 	{
 		switch(status)
@@ -106,23 +142,27 @@ class MainFraim extends JFrame implements ActionListener {
 		case 1:
 			row=10;
 			colum=10;
-			frame.setSize(400,440);
+			center.setSize(450,450);
+			frame.setSize(450,490);
 			break;
 		case 2:
 			row=10;
 			colum=20;
-			frame.setSize(800,440);
+			center.setSize(900,450);
+			frame.setSize(900,490);
 			break;
 		case 3:
 			row=20;
 			colum=30;
-			frame.setSize(1200,840);
+			center.setSize(1350,900);
+			frame.setSize(1350,940);
 			break;
 		}
 	}
 	
+	//±×¸®µå ·¹ÀÌ¾Æ¿ô¿¡ ¹öÆ°À» ÁÖ°¡ÇÏ´Â ¸Ş¼Òµå, ¾×¼Ç¸®½ºÅ×³Ê, ¸¶¿ì½º¸®½ºÅ×³Ê Ãß°¡
 	void setGridLayout() {
-		frame.setLayout(new GridLayout(row,colum));
+		center.setLayout(new GridLayout(row,colum));
 		
 		for(int i=0;i<row;i++)
 		{
@@ -131,34 +171,136 @@ class MainFraim extends JFrame implements ActionListener {
 				j2[i][j] = new JButton();
 				
 				j2[i][j].addActionListener(action);
-				j2[i][j].addMouseListener(new MyMouseListener());
+				j2[i][j].addMouseListener(new MouseListener() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						for(int i=0; i<row; i++)
+						{
+							for(int j=0; j<colum; j++)
+							{
+								if(j2[i][j]==e.getSource())
+								{
+									if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1) {
+										j2[i][j].setEnabled(false);
+										j2[i][j].setBackground(Color.BLUE);
+										arrayBlue[i][j]=1;
+										bomCount--;
+										l1.setText("Áö·Ú¼ö : " + bomCount);
+										if(bomCount < 1)
+										{
+											endGame();
+										}
+							        }
+								}
+							}
+						}
+					}
+					@Override
+					public void mousePressed(MouseEvent e) { }
+					@Override
+					public void mouseReleased(MouseEvent e) { }
+					@Override
+					public void mouseEntered(MouseEvent e) { }
+					@Override
+					public void mouseExited(MouseEvent e) { }
+				});
 				
-				frame.add(j2[i][j]);
+				center.add(j2[i][j]);
 			}
 			
 		}
+		frame.add(center, BorderLayout.CENTER);
 	}
 	
+	//¹öÆ° ´­·¶À»¶§ÀÇ ¾×¼Ç ¸®½ºÅ×³Ê
+	ActionListener action = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			//ÃÊ±â¿¡ start°ªÀÌ trueÀÎ 1¹ø¸¸ ½ÇÇà
+			if(start)
+			{
+				statusTimer = true;
+				setTimer();
+			}
+			//¹öÆ° Å¬¸¯½Ã ½ÇÇà
+			for(int i=0; i<row; i++)
+			{
+				for(int j=0; j<colum;j++)
+				{
+					if(e.getSource().equals(j2[i][j]))
+					{
+						j2[i][j].setEnabled(false);
+						if(arrayIndex[i][j] != -1)
+						{
+							if(arrayIndex[i][j]==0) {
+								j2[i][j].setText("");
+							}
+							else {
+								j2[i][j].setText(arrayIndex[i][j]+"");
+								arrayBlue[i][j]=2;
+							}
+							
+						}
+						else
+						{
+							endGame();
+							j2[i][j].setBackground(Color.red);
+						}
+					}
+				}
+			}
+			//
+			if(bomCount < 1)
+			{
+				endGame();
+			}
+		}
+	};
+	
+	//°ÔÀÓÁ¾·á ¸Ş¼Òµå
+	void endGame() {
+		for(int i=0; i<row; i++)
+		{
+			for(int j=0; j<colum; j++)
+			{
+				if(arrayIndex[i][j] == -1)
+				{
+					j2[i][j].setText("*");
+				}
+				j2[i][j].setEnabled(false);
+				
+			}
+		}
+		l2.setText("°ÔÀÓ Á¾·á");
+		statusTimer = false;
+	}
+	
+	//±âÁ¸ ¹öÆ°µéÀ» Á¦°ÅÇÏ´Â ¸Ş¼Òµå
 	void deleteGridLayout() {
 		for(int i=0; i<row; i++)
 		{
 			for(int j=0; j<colum; j++)
 			{
-				frame.remove(j2[i][j]);
+				j2[i][j].setEnabled(true);
+				center.remove(j2[i][j]);
 			}
 		}
 	}
 	
-	//ê²Œì„ ì‹œì‘ì‹œ ìˆ«ì ëœë¤ìœ¼ë¡œ ì •í•˜ëŠ” ë©”ì†Œë“œ
+	
+	
+	//°ÔÀÓ ½ÃÀÛ½Ã ¼ıÀÚ ·£´ıÀ¸·Î Á¤ÇÏ´Â ¸Ş¼Òµå
 	void setArrayRandom() {
 		for(int i=0;i<row;i++)
 		{
 			for(int j=0; j<colum; j++)
 			{
 				j2[i][j].setBackground(null);
-				arrayIndex[i][j] = (int) ((Math.random())*5);
+				arrayBlue[i][j] = 0;
+				//0~9±îÁö ·£Á¡¼ıÀÚ¸¦ »Ì¾Æ 9ÀÎ°æ¿ì¸¸ Áö·Ú·Î ¼³Á¤ÇÑ´Ù
+				arrayIndex[i][j] = (int) ((Math.random())*10);
 				
-				if (arrayIndex[i][j] == 4) {
+				if (arrayIndex[i][j] == 9) {
 					arrayIndex[i][j] = -1;
 					bomCount++;
 				}
@@ -168,12 +310,12 @@ class MainFraim extends JFrame implements ActionListener {
 			}
 		}
 		
-		//-1,0 ê°’ì„ í† ëŒ€ë¡œ ì§€ë¢°ì™€ ê·¸ ì£¼ìœ„ ê°’ì„ ì¹´ìš´íŠ¸í•˜ì—¬ arrayIndex ì—…ë°ì´íŠ¸ë¥¼ í•œë‹¤
+		//-1,0 °ªÀ» Åä´ë·Î Áö·Ú¿Í ±× ÁÖÀ§ °ªÀ» Ä«¿îÆ®ÇÏ¿© arrayIndex ¾÷µ¥ÀÌÆ®¸¦ ÇÑ´Ù
 		for(int i=0;i<row;i++)
 		{
 			for(int ii=0;ii<colum;ii++)
 			{
-				//ì§€ë¢°ì¸ê²½ìš° ì„¤ì •
+				//Áö·ÚÀÎ°æ¿ì ¼³Á¤
 				if(arrayIndex[i][ii] == -1)
 				{
 					setRound(i,ii);
@@ -182,14 +324,15 @@ class MainFraim extends JFrame implements ActionListener {
 		}
 	}
 	
+	//Áö·Ú ÁÖÀ§°ªµé ¼³Á¤ÇÏ´Â ¸Ş¼Òµå
 	private void setRound(int I,int J)
 	{
-		//ì£¼ìœ„ì—ì„œ ì§€ë¢°ê°€ ì•„ë‹Œê²½ìš°,ì¸ë±ìŠ¤ê°€ ì •ìƒì´ ì•„ë‹Œê²½ìš°ë§Œ íŒë³„í•˜ë©´ ëœë‹¤
+		//ÁÖÀ§¿¡¼­ Áö·Ú°¡ ¾Æ´Ñ°æ¿ì,ÀÎµ¦½º°¡ Á¤»óÀÌ ¾Æ´Ñ°æ¿ì¸¸ ÆÇº°ÇÏ¸é µÈ´Ù
 		for(int i = I-1; i <= I+1; i++)
 		{
 			for(int j = J-1; j <= J+1; j++)
 			{
-				//ì§€ë¢°ì£¼ìœ„ì˜ ì¸ë±ìŠ¤ê°€ ì •ìƒë²”ìœ„ì¼ ë•Œ
+				//Áö·ÚÁÖÀ§ÀÇ ÀÎµ¦½º°¡ Á¤»ó¹üÀ§ÀÏ ¶§
 				if((i>=0 && i<=row-1) && (j>=0 && j<=colum-1))
 				{
 					if(arrayIndex[i][j] != -1)
@@ -200,197 +343,182 @@ class MainFraim extends JFrame implements ActionListener {
 		}
 	}
 	
-	//ëœë¤ìœ¼ë¡œ ë‚˜ì—´ëœ ê°’ë“¤ì„ JButtonì— ë„£ëŠ” ë©”ì†Œë“œ
-		private void setArray() {
-			
-			for(int i=0;i<row;i++)
-			{
-				for(int j=0;j<colum;j++)
-				{
-//					if (arrayIndex[i][j] == -1) {
-//						j2[i][j].setText("ì§€ë¢°");
-//					}
-					if(arrayIndex[i][j] == 0) {
-						j2[i][j].setVisible(false);
-					}
-					else {
-						j2[i][j].setText("");
-					}
-						
-				}
-			}
-			
-		}
-	
-	//ì €ì¥ ëˆŒë €ì„ì‹œ ì‹¤í–‰ë˜ëŠ” ë©”ì†Œë“œ
-		private void saveData() {
-			// ë§¥OSì—ì„œ ëŒë ¸ë˜ ì ˆëŒ€ìœ„ì¹˜ ì…ë‹ˆë‹¤
-//			try (DataOutputStream dos = new DataOutputStream(new FileOutputStream("/Users/min_macbookpro/eclipse-workspace-1.8.0/Week12/gameData.dat"));) {
-			// ìœˆë„ìš°ì—ì„œ í…ŒìŠ¤íŠ¸ê°€ ë¶ˆê°€í•˜ì—¬ ëŒì•„ê°€ëŠ”ì§€ í™•ì¸ ëª»í–ˆìŠµë‹ˆë‹¤..
-			try (DataOutputStream dos = new DataOutputStream(new FileOutputStream("C:\\Users\\Administrator\\Downloads\\data.dat"));) {
+	//¼³Á¤µÈ arrayIndex °ªÀ» JButton¿¡ ³Ö´Â ¸Ş¼Òµå
+	//ÀúÀå°ª ºÒ·¯¿Í º¸¿©ÁÖ´Â ¸Ş¼Òµå
+	private void setArray() {
+		for(int i=0;i<row;i++) {
+			for(int j=0;j<colum;j++) {
 				
-				for(int i=0;i<row;i++)
-				{
-					for(int j=0;j<colum;j++)
-					{
-						int temp = arrayIndex[i][j];
-						dos.writeInt(temp);
-						System.out.printf("WRITE COMPLITE   :   array[%d][%d] : %d\n",i,j,temp);
+				j2[i][j].setVisible(true);
+//				if(arrayIndex[i][j] == 0) {
+//					j2[i][j].setVisible(false);
+//				}
+//				else {
+					if(arrayBlue[i][j]==1) {
+						j2[i][j].setEnabled(false);
+						j2[i][j].setBackground(Color.BLUE);
 					}
-				}
-			} catch (IOException e) {}
+					else if(arrayBlue[i][j]==2) {
+						j2[i][j].setEnabled(false);
+						j2[i][j].setText(arrayIndex[i][j]+"");
+					}
+					else
+						j2[i][j].setText("");
+//				}
+			}
 		}
 		
-		//ë¶ˆëŸ¬ì˜¤ê¸° ëˆŒë €ì„ì‹œ ì‹¤í–‰ë˜ëŠ” ë©”ì†Œë“œ
-		private void readData() {
-			// ë§¥OSì—ì„œ ëŒë ¸ë˜ ì ˆëŒ€ìœ„ì¹˜ ì…ë‹ˆë‹¤
-//			try (DataInputStream dis = new DataInputStream(new FileInputStream("/Users/min_macbookpro/eclipse-workspace-1.8.0/Week12/gameData.dat"));) {
-			// ìœˆë„ìš°ì—ì„œ í…ŒìŠ¤íŠ¸ê°€ ë¶ˆê°€í•˜ì—¬ ëŒì•„ê°€ëŠ”ì§€ í™•ì¸ ëª»í–ˆìŠµë‹ˆë‹¤..
-			try (DataInputStream dis = new DataInputStream(new FileInputStream("C:\\Users\\Administrator\\Downloads\\data.dat"));) {
-				for(int i=0;i<row;i++)
-				{
-					for(int j=0;j<colum;j++)
-					{
-						int temp = dis.readInt();
-						arrayIndex[i][j] = temp;
-						System.out.printf("READ COMPLITE   :   array[%d][%d] : %d\n",i,j,temp);
-					}
-				}
-				setArray();
-			} catch (IOException e) {}
-		}
+	}
 	
-	//ë©”ë‰´ì—ì„œ í´ë¦­ì‹œ ê°ê° ì‹¤í–‰í•  ë©”ì†Œë“œ ì •ì˜
+	//ÀúÀå ´­·¶À»½Ã ½ÇÇàµÇ´Â ¸Ş¼Òµå
+	private void saveData() {
+		try (DataOutputStream dos = new DataOutputStream(new FileOutputStream("C:\\Users\\Min_Windows\\Downloads\\GameSaveData.dat"));) {
+			
+			for(int i=0;i<20;i++)
+			{
+				for(int j=0;j<30;j++)
+				{
+					int temp = arrayIndex[i][j];
+					dos.writeInt(temp);
+					System.out.printf("WRITE COMPLITE   :   arrayIndex[%d][%d] : %d\n",i,j,temp);
+				}
+			}
+			for(int i=0;i<20;i++)
+			{
+				for(int j=0;j<30;j++)
+				{
+					int temp = arrayBlue[i][j];
+					dos.writeInt(temp);
+					System.out.printf("WRITE COMPLITE   :   arrayBlue[%d][%d] : %d\n",i,j,temp);
+				}
+			}
+			dos.writeInt(bomCount);
+			System.out.printf("WRITE COMPLITE   :   bomCount[%d]\n",bomCount);
+			dos.writeInt(timer);
+			System.out.printf("WRITE COMPLITE   :   timer[%d]\n",timer);
+			dos.writeInt(status);
+			System.out.printf("WRITE COMPLITE   :   status[%d]\n",status);
+		} catch (IOException e) {}
+	}
+		
+	//ºÒ·¯¿À±â ´­·¶À»½Ã ½ÇÇàµÇ´Â ¸Ş¼Òµå
+	private void readData() {
+		try (DataInputStream dis = new DataInputStream(new FileInputStream("C:\\Users\\Min_Windows\\Downloads\\GameSaveData.dat"));) {
+
+			for(int i=0;i<20;i++)
+			{
+				for(int j=0;j<30;j++)
+				{
+					int temp = dis.readInt();
+					arrayIndex[i][j] = temp;
+					System.out.printf("READ COMPLITE   :   arrayIndex[%d][%d] : %d\n",i,j,temp);
+				}
+			}
+			for(int i=0;i<20;i++)
+			{
+				for(int j=0;j<30;j++)
+				{
+					int temp = dis.readInt();
+					arrayBlue[i][j] = temp;
+					System.out.printf("READ COMPLITE   :   arrayBlue[%d][%d] : %d\n",i,j,temp);
+				}
+			}
+			bomCount = dis.readInt();
+			System.out.printf("READ COMPLITE   :   bomCount[%d]\n",bomCount);
+			timer = dis.readInt();
+			System.out.printf("READ COMPLITE   :   timer[%d]\n",timer);
+			status = dis.readInt();
+			System.out.printf("READ COMPLITE   :   timer[%d]\n",status);
+		} catch (IOException e) {}
+	}
+	
+	//¸Ş´º¿¡¼­ Å¬¸¯½Ã °¢°¢ ½ÇÇàÇÒ ¸Ş¼Òµå Á¤ÀÇ
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		JMenuItem mi = (JMenuItem) (e.getSource());
 		
 		switch(mi.getText()) {
-		case "ìƒˆ ê²Œì„" :
-			System.out.println("ìƒˆ ê²Œì„");
-			setLayout(null);
-			setArrayRandom();
-			setArray();
-			break;
-		case "ë ˆë²¨ ì„ íƒ" :
-			System.out.println("ë ˆë²¨ ì„ íƒ"); break;
-		case "ì´ˆê¸‰":
+		case "»õ °ÔÀÓ" :
+			deleteGridLayout();
+			restart();
+			System.out.println("»õ °ÔÀÓ"); break;
+		case "·¹º§ ¼±ÅÃ" :
+			System.out.println("·¹º§ ¼±ÅÃ"); break;
+		case "ÃÊ±Ş":
 			deleteGridLayout();
 			status = 1;
-			settingSize();
-			setGridLayout();
-			
-			setArrayRandom();
-			setArray();
-			System.out.println("ì´ˆê¸‰"); break;
-		case "ì¤‘ê¸‰":
+			restart();
+			System.out.println("ÃÊ±Ş"); break;
+		case "Áß±Ş":
 			deleteGridLayout();
 			status = 2;
-			settingSize();
-			setGridLayout();
-			
-			setArrayRandom();
-			setArray();
-			System.out.println("ì¤‘ê¸‰"); break;
-		case "ê³ ê¸‰":
+			restart();
+			System.out.println("Áß±Ş"); break;
+		case "°í±Ş":
 			deleteGridLayout();
 			status = 3;
+			restart();
+			System.out.println("°í±Ş"); break;
+		case "Á¾·áÇÏ±â" :
+			System.exit(0);
+			System.out.println("Á¾·áÇÏ±â"); break;
+		case "ÀúÀå" :
+			saveData();
+			l2.setText("ÀúÀå ¿Ï·á");
+			System.out.println("ÀúÀå"); break;
+		case "ºÒ·¯¿À±â" :
+			System.out.println("ºÒ·¯¿À±â");
+			deleteGridLayout();
+			readData();
+			setNorth();
 			settingSize();
 			setGridLayout();
-			
-			setArrayRandom();
 			setArray();
-			System.out.println("ê³ ê¸‰"); break;
-		case "ì¢…ë£Œí•˜ê¸°" :
-			System.exit(0);
-			System.out.println("ì¢…ë£Œí•˜ê¸°"); break;
-		case "ì €ì¥" :
-			System.out.println("ì €ì¥");
-			saveData(); 
+			start = true;
+			statusTimer = true;
 			break;
-		case "ë¶ˆëŸ¬ì˜¤ê¸°" :
-			System.out.println("ë¶ˆëŸ¬ì˜¤ê¸°");
-			readData(); 
-			break;
-		case "ë„ì›€ë§" :
-			System.out.println("ë„ì›€ë§"); break;
+		case "µµ¿ò¸»" :
+			System.out.println("µµ¿ò¸»"); break;
 		}
 	}
 	
-	ActionListener action = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-
-			for(int i=0; i<row; i++)
-			{
-				for(int j=0; j<colum;j++)
+	//¼¼ÆÃ¸Ş¼Òµå ¸ğÀ½ ¸Ş¼Òµå
+	void restart() {
+		start = true;
+		bomCount = 0;
+		timer = 0;
+		settingSize();
+		setGridLayout();
+		setArrayRandom();
+		setArray();
+		setNorth();
+	}
+	
+	//Å¸ÀÌ¸Ó ¼³Á¤ ¸Ş¼Òµå
+	void setTimer()
+	{
+		new Thread(new Runnable() {
+			public void run() {
+				while(statusTimer)
 				{
-					if(e.getSource().equals(j2[i][j]))
-					{
-						if(arrayIndex[i][j] != -1)
-						{
-							j2[i][j].setText(arrayIndex[i][j]+"");
-							j2[i][j].setForeground(Color.BLUE);
-							j2[i][j].setOpaque(true);
-						}
-						else
-						{
-							j2[i][j].setText("*");
-							j2[i][j].setBackground(Color.red);
-							j2[i][j].setOpaque(true);
-							frame.setTitle("ê²Œì„ ì¢…ë£Œ");
-						}
-					}
+					l3.setText("´©Àû½Ã°£ : " + timer++);
+					try {
+						Thread.sleep(1000);
+					} catch(InterruptedException e) {}
 				}
 			}
-		}
-	};
+		}).start();
+		start = false;
+	}
+	
 	
 	
 } //end class
 
-class MyMouseListener implements MouseListener {
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		JButton bt = (JButton) e.getSource();
-		// TODO Auto-generated method stub
-		if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1) {
-            // whatever
-			bt.setBackground(Color.BLUE);
-        }
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-}
-
 
 public class GameProject {
-	//12171571 ê°•ë¯¼ìƒ
+	//12171571 °­¹Î»ó
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		new MainFraim();
