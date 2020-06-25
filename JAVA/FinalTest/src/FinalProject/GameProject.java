@@ -265,7 +265,14 @@ class MainFraim extends JFrame implements ActionListener {
 			{
 				if(arrayIndex[i][j] == -1)
 				{
-					j2[i][j].setText("*");
+					if(arrayBlue[i][j] == 0)
+					{
+						j2[i][j].setText("*");
+					}
+					else
+					{
+						j2[i][j].setText("X");
+					}
 				}
 				j2[i][j].setEnabled(false);
 				
