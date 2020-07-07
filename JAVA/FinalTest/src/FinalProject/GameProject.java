@@ -39,7 +39,7 @@ class MainFraim extends JFrame implements ActionListener {
 	JLabel l3 = new JLabel();		//타이머
 	
 	int arrayIndex[][] = new int[20][30];		//지뢰 : -1, 그외 : 지뢰근처 카운트수
-	int arrayBlue[][] = new int[20][30];		//초기값 : 0, 우클릭 : 1, 클릭 : 2s
+	int arrayBlue[][] = new int[20][30];		//초기값 : 0, 우클릭 : 1, 클릭 : 2
 	JButton j2[][] = new JButton[20][30];		//그리드 레이아웃에 들어가는 버튼
 	
 	int row=10, colum=20;				//사이즈 조절을 위한 행렬값
@@ -48,6 +48,8 @@ class MainFraim extends JFrame implements ActionListener {
 	int timer = 0;						//타이머
 	boolean start = true;				//타이머 첫 작동여부
 	boolean statusTimer = true;			//타이머 종료여부
+	boolean end = true;					//게임 종료여부 (게임실패 여부 판별용)
+	int	howSelect = 200 - bomCount;		//지뢰를 제외한 나머지 누를수 있는 버튼수
 	
 	MainFraim() {
 		
@@ -142,21 +144,35 @@ class MainFraim extends JFrame implements ActionListener {
 		case 1:
 			row=10;
 			colum=10;
-			center.setSize(450,450);
-			frame.setSize(450,490);
+			center.setSize(500,500);
+			frame.setSize(500,540);
 			break;
 		case 2:
 			row=10;
 			colum=20;
-			center.setSize(900,450);
-			frame.setSize(900,490);
+			center.setSize(1000,500);
+			frame.setSize(1000,540);
 			break;
 		case 3:
 			row=20;
 			colum=30;
-			center.setSize(1350,900);
-			frame.setSize(1350,940);
+			center.setSize(1500,1000);
+			frame.setSize(1500,1040);
 			break;
+		}
+	}
+	
+	//지뢰 제외한 클릭할 수 있는 버튼수 설정 메소드
+	void setHowSelect()
+	{
+		switch(status)
+		{
+		case 1:
+			howSelect = 100-bomCount; break;
+		case 2:
+			howSelect = 200-bomCount; break;
+		case 3:
+			howSelect = 600-bomCount; break;
 		}
 	}
 	
@@ -181,14 +197,22 @@ class MainFraim extends JFrame implements ActionListener {
 								if(j2[i][j]==e.getSource())
 								{
 									if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1) {
-										j2[i][j].setEnabled(false);
-										j2[i][j].setBackground(Color.BLUE);
-										arrayBlue[i][j]=1;
-										bomCount--;
-										l1.setText("지뢰수 : " + bomCount);
-										if(bomCount < 1)
+										//처음 우클릭인 경우
+										if(arrayBlue[i][j] != 1)
 										{
-											endGame();
+											j2[i][j].setBackground(Color.BLUE);
+											bomCount--;
+											l1.setText("지뢰수 : " + bomCount);
+											arrayBlue[i][j]=1;
+											System.out.println("bomCount : " + bomCount);
+										}
+										else
+										{
+											j2[i][j].setBackground(null);
+											bomCount++;
+											l1.setText("지뢰수 : " + bomCount);
+											arrayBlue[i][j]=0;
+											System.out.println("bomCount : " + bomCount);
 										}
 							        }
 								}
@@ -229,53 +253,79 @@ class MainFraim extends JFrame implements ActionListener {
 				{
 					if(e.getSource().equals(j2[i][j]))
 					{
-						j2[i][j].setEnabled(false);
-						if(arrayIndex[i][j] != -1)
-						{
-							if(arrayIndex[i][j]==0) {
-								j2[i][j].setText("");
+						if(arrayIndex[i][j] != -1) {
+							if(arrayBlue[i][j] != 1)
+							{
+								j2[i][j].setEnabled(false);
+								howSelect--;
+								System.out.println("howSelect : " + howSelect);
+								if(arrayIndex[i][j]==0) {
+									j2[i][j].setText("");
+									arrayBlue[i][j]=2;
+								}
+								else {
+									j2[i][j].setText(arrayIndex[i][j]+"");
+									arrayBlue[i][j]=2;
+								}
+								if(howSelect == 0)
+								{
+									endGame();
+//									if(end)
+//										endGame2();
+								}
 							}
-							else {
-								j2[i][j].setText(arrayIndex[i][j]+"");
-								arrayBlue[i][j]=2;
-							}
-							
 						}
 						else
 						{
-							endGame();
-							j2[i][j].setBackground(Color.red);
+							if(arrayBlue[i][j] != 1)
+							{
+								j2[i][j].setBackground(Color.red);
+								endGame2();
+							}
 						}
+						
 					}
 				}
-			}
-			//
-			if(bomCount < 1)
-			{
-				endGame();
 			}
 		}
 	};
 	
 	//게임종료 메소드
 	void endGame() {
+		System.out.println("endGame()");
 		for(int i=0; i<row; i++)
 		{
 			for(int j=0; j<colum; j++)
 			{
+				j2[i][j].setEnabled(false);
 				if(arrayIndex[i][j] == -1)
 				{
-					if(arrayBlue[i][j] == 0)
-					{
-						j2[i][j].setText("*");
-					}
-					else
-					{
-						j2[i][j].setText("X");
-					}
+					j2[i][j].setText("@");
 				}
+			}
+		}
+		l2.setText("CLEAR!!");
+		statusTimer = false;
+		end = false;
+	}
+	
+	void endGame2()
+	{
+		for(int i=0; i<row; i++)
+		{
+			for(int j=0; j<colum; j++)
+			{
 				j2[i][j].setEnabled(false);
-				
+				//지뢰인 경우
+				if(arrayIndex[i][j] == -1)
+				{
+					j2[i][j].setText("@");
+				}
+				//지뢰가 아닌데 우클릭 한 경우
+				else if(arrayBlue[i][j] == 1)
+				{
+					j2[i][j].setText("X");
+				}
 			}
 		}
 		l2.setText("게임 종료");
@@ -304,10 +354,10 @@ class MainFraim extends JFrame implements ActionListener {
 			{
 				j2[i][j].setBackground(null);
 				arrayBlue[i][j] = 0;
-				//0~9까지 랜점숫자를 뽑아 9인경우만 지뢰로 설정한다
-				arrayIndex[i][j] = (int) ((Math.random())*10);
+				//0~14까지 랜점숫자를 뽑아 14인경우만 지뢰로 설정한다
+				arrayIndex[i][j] = (int) ((Math.random())*15);
 				
-				if (arrayIndex[i][j] == 9) {
+				if (arrayIndex[i][j] == 14) {
 					arrayIndex[i][j] = -1;
 					bomCount++;
 				}
@@ -345,7 +395,6 @@ class MainFraim extends JFrame implements ActionListener {
 					if(arrayIndex[i][j] != -1)
 						arrayIndex[i][j]++;
 				}
-				
 			}
 		}
 	}
@@ -357,20 +406,29 @@ class MainFraim extends JFrame implements ActionListener {
 			for(int j=0;j<colum;j++) {
 				
 				j2[i][j].setVisible(true);
+//				주석 해제시 빈칸 안보이기 설정 (아래쪽 주석도 같이 해제 하여야 한다!)
 //				if(arrayIndex[i][j] == 0) {
 //					j2[i][j].setVisible(false);
 //				}
 //				else {
 					if(arrayBlue[i][j]==1) {
-						j2[i][j].setEnabled(false);
 						j2[i][j].setBackground(Color.BLUE);
+//						//주석 해제시 숫자표기 영역
+//						j2[i][j].setText(arrayIndex[i][j]+"");
 					}
 					else if(arrayBlue[i][j]==2) {
 						j2[i][j].setEnabled(false);
-						j2[i][j].setText(arrayIndex[i][j]+"");
+						if(arrayIndex[i][j] == 0)
+							j2[i][j].setText("");
+						else
+							j2[i][j].setText(arrayIndex[i][j]+"");
 					}
-					else
+					else {
+//						//주석 해제시 숫자표기 영역
+//						j2[i][j].setText(arrayIndex[i][j]+"");
 						j2[i][j].setText("");
+					}
+//				주석 해제시 빈칸 안보이기 설정 (위 주석과 같이 해제 하여야 한다!)
 //				}
 			}
 		}
@@ -405,6 +463,8 @@ class MainFraim extends JFrame implements ActionListener {
 			System.out.printf("WRITE COMPLITE   :   timer[%d]\n",timer);
 			dos.writeInt(status);
 			System.out.printf("WRITE COMPLITE   :   status[%d]\n",status);
+			dos.writeInt(howSelect);
+			System.out.printf("WRITE COMPLITE   :   howSelect[%d]\n",howSelect);
 		} catch (IOException e) {}
 	}
 		
@@ -435,7 +495,9 @@ class MainFraim extends JFrame implements ActionListener {
 			timer = dis.readInt();
 			System.out.printf("READ COMPLITE   :   timer[%d]\n",timer);
 			status = dis.readInt();
-			System.out.printf("READ COMPLITE   :   timer[%d]\n",status);
+			System.out.printf("READ COMPLITE   :   status[%d]\n",status);
+			howSelect = dis.readInt();
+			System.out.printf("READ COMPLITE   :   howSelect[%d]\n",howSelect);
 		} catch (IOException e) {}
 	}
 	
@@ -492,6 +554,7 @@ class MainFraim extends JFrame implements ActionListener {
 	
 	//세팅메소드 모음 메소드
 	void restart() {
+		statusTimer = false;
 		start = true;
 		bomCount = 0;
 		timer = 0;
@@ -499,6 +562,7 @@ class MainFraim extends JFrame implements ActionListener {
 		setGridLayout();
 		setArrayRandom();
 		setArray();
+		setHowSelect();
 		setNorth();
 	}
 	
